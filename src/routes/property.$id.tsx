@@ -138,7 +138,9 @@ function PropertyPage() {
                 <h1 className="mt-4 text-3xl font-extrabold">
                   {property.title}
                   <span className="mt-1 flex items-center gap-1.5 text-base font-medium text-muted-foreground">
-                    <MapPin className="size-4 text-primary" /> {property.locality}, {property.city}
+                    <MapPin className="size-4 text-primary" />{" "}
+                    {property.address ? `${property.address}, ` : ""}
+                    {property.locality}, {property.city}
                   </span>
                 </h1>
               )}
