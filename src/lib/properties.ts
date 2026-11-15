@@ -1,4 +1,4 @@
-import p1001a from "@/assets/property-1001-exterior.jpg";
+import p1001aAsset from "@/assets/property-1001-exterior.jpg.asset.json";
 import p1001b from "@/assets/property-1001-living.jpg";
 import p1002a from "@/assets/property-1002-exterior.jpg";
 import p1002b from "@/assets/property-1002-living.jpg";
@@ -6,6 +6,8 @@ import p1003a from "@/assets/property-1003-living.jpg";
 import p1003b from "@/assets/property-1003-kitchen.jpg";
 import p1004a from "@/assets/property-1004-exterior.jpg";
 import p1004b from "@/assets/property-1004-bedroom.jpg";
+
+const p1001a = p1001aAsset.url;
 
 export type Property = {
   id: string;
