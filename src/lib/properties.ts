@@ -51,18 +51,29 @@ function descriptionFor(id: string) {
   return hit?.[1].trim() || undefined;
 }
 
+export function normalizeDescription(text: string) {
+  return text.replace(/\\r\\n|\\n/g, "\n");
+}
+
+export function propertyAddress(p: Property) {
+  return p.address ?? [p.locality, p.city].filter(Boolean).join(", ");
+}
+
 /** Applies spreadsheet values and Description.txt over the built-in listing. */
 function withSheetData(p: Property): Property {
   const row = (Object.values(sheets)[0] ?? []).find(
     (r: Row) => String(r["PROPERTY ID"]).trim().toUpperCase() === p.id,
   );
-  const description = descriptionFor(p.id) ?? p.description;
+  const description = normalizeDescription(descriptionFor(p.id) ?? p.description);
   if (!row) return { ...p, description };
   const num = (k: string, fb: number) => (row[k] != null && !Number.isNaN(Number(row[k])) ? Number(row[k]) : fb);
   return {
     ...p,
     description,
-    address: row["Address"] ? String(row["Address"]).trim() : p.address,
+    address: row["Address"] != null ? String(row["Address"]) : p.address,
+    mappedLocations: row["Mapped Location"] != null
+      ? String(row["Mapped Location"]).split(",").map((place) => place.trim()).filter(Boolean)
+      : p.mappedLocations,
     mapLink: row["Location Map link"] ? String(row["Location Map link"]).trim() : p.mapLink,
     rent: num("MONTHLY RENT", p.rent),
     deposit: num("DEPOSIT", p.deposit),
@@ -87,6 +98,8 @@ export type Property = {
   city: string;
   /** Extra place names a tenant might type for this listing. */
   keywords: string[];
+  /** Spreadsheet search locations override the sample locality and keywords. */
+  mappedLocations?: string[] | undefined;
   images: string[];
   description: string;
   rent: number;
@@ -177,14 +190,14 @@ const BASE_PROPERTIES: Property[] = [
 export const PROPERTIES: Property[] = BASE_PROPERTIES.map(withSheetData);
 
 /** Locations shown as quick-pick chips under the search bar. */
-export const POPULAR_LOCATIONS = PROPERTIES.map((p) => p.locality);
+export const POPULAR_LOCATIONS = [...new Set(PROPERTIES.flatMap((p) => p.mappedLocations ?? [p.locality]))];
 
 /** Returns every property whose location matches the typed text. Empty text returns all. */
 export function filterPropertiesByLocation(query: string, list: Property[] = PROPERTIES) {
   const q = query.trim().toLowerCase();
   if (!q) return list;
   return list.filter((p) =>
-    [p.locality, p.city, ...p.keywords].some((place) => place.toLowerCase().includes(q)),
+    (p.mappedLocations ?? [p.locality, p.city, ...p.keywords]).some((place) => place.toLowerCase().includes(q)),
   );
 }
 

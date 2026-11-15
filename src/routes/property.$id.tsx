@@ -17,7 +17,7 @@ import {
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { VerifyDialog } from "@/components/site/VerifyDialog";
-import { formatRupees, getPropertyById, previewDescription } from "@/lib/properties";
+import { formatRupees, getPropertyById, previewDescription, propertyAddress } from "@/lib/properties";
 import { loadVerifiedVisitor, saveVerifiedVisitor, type VerifiedVisitor } from "@/lib/verification";
 import { CONTACT_DISPLAY, CONTACT_TEL } from "@/lib/contact";
 
@@ -136,7 +136,7 @@ function PropertyPage() {
                   <iframe
                     title={`Map of ${property.address ?? property.locality}`}
                     src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"]}&q=${encodeURIComponent(
-                      [property.address, property.locality, property.city].filter(Boolean).join(", "),
+                      propertyAddress(property),
                     )}`}
                     className="aspect-video w-full border-0"
                     loading="lazy"
@@ -167,8 +167,7 @@ function PropertyPage() {
                   {property.title}
                   <span className="mt-1 flex items-center gap-1.5 text-base font-medium text-muted-foreground">
                     <MapPin className="size-4 text-primary" />{" "}
-                    {property.address ? `${property.address}, ` : ""}
-                    {property.locality}, {property.city}
+                    {propertyAddress(property)}
                   </span>
                 </h1>
               )}
