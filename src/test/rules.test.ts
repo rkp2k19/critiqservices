@@ -42,10 +42,13 @@ describe("verification", () => {
   });
 });
 
-describe("address from the spreadsheet", () => {
-  it("shows the Address column value for RPL-1001", () => {
-    const p = PROPERTIES.find((x) => x.id === "RPL-1001")!;
-    expect(p.address).toBe("Shriram WYTField");
+describe("address and map link from the spreadsheet", () => {
+  const p = PROPERTIES.find((x) => x.id === "RPL-1001")!;
+  it("shows the Address column value exactly as written in the sheet", () => {
+    expect(p.address).toBe("Shriram WYTField, Budigere Cross");
+  });
+  it("carries the Location Map link from the sheet", () => {
+    expect(p.mapLink).toBe("https://maps.app.goo.gl/De7HD29hbv7Q7uBG7");
   });
 });
 

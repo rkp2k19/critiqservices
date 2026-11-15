@@ -63,6 +63,7 @@ function withSheetData(p: Property): Property {
     ...p,
     description,
     address: row["Address"] ? String(row["Address"]).trim() : p.address,
+    mapLink: row["Location Map link"] ? String(row["Location Map link"]).trim() : p.mapLink,
     rent: num("MONTHLY RENT", p.rent),
     deposit: num("DEPOSIT", p.deposit),
     bhk: row["TYPE"] ? String(row["TYPE"]) : p.bhk,
@@ -81,6 +82,8 @@ export type Property = {
   locality: string;
   /** Society/building name from the spreadsheet's Address column, shown with the location pin. */
   address?: string | undefined;
+  /** Google Maps link from the spreadsheet's "Location Map link" column. */
+  mapLink?: string | undefined;
   city: string;
   /** Extra place names a tenant might type for this listing. */
   keywords: string[];
