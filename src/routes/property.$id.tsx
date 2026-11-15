@@ -157,7 +157,7 @@ function PropertyPage() {
           </div>
 
           {/* Details */}
-          <div className="space-y-5">
+          <div className="space-y-5 self-start lg:sticky lg:top-6">
             <div className="rounded-2xl bg-card p-6 shadow-card">
               <span className="rounded-md bg-highlight px-2.5 py-1 font-display text-sm font-bold text-highlight-foreground">
                 {property.id}
