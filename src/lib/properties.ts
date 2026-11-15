@@ -99,7 +99,7 @@ export type Property = {
   /** Extra place names a tenant might type for this listing. */
   keywords: string[];
   /** Spreadsheet search locations override the sample locality and keywords. */
-  mappedLocations?: string[];
+  mappedLocations?: string[] | undefined;
   images: string[];
   description: string;
   rent: number;
