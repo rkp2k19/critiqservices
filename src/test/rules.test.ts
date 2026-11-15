@@ -47,3 +47,17 @@ describe("listings never expose a complete address", () => {
     for (const p of PROPERTIES) expect(Object.keys(p)).not.toContain("address");
   });
 });
+
+describe("spreadsheet data for RPL-1001", () => {
+  const p = PROPERTIES.find((x) => x.id === "RPL-1001")!;
+  it("uses rent and amenities from property_details.xlsx", () => {
+    expect(p.rent).toBe(29000);
+    expect(p.amenities).toContain("Senior Citizen Sit-Outs");
+    expect(p.amenities).toHaveLength(12);
+  });
+  it("puts the main image first and the compass photo last", () => {
+    expect(p.images).toHaveLength(6);
+    expect(p.images[0]).toContain("complex");
+    expect(p.images.at(-1)).toContain("compass");
+  });
+});

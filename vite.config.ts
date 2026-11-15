@@ -8,6 +8,7 @@
 // hosting already compresses at the edge.
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { xlsxPlugin } from "./plugins/xlsx-plugin";
 
 export default defineConfig({
   tanstackStart: {
@@ -16,6 +17,7 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    plugins: [xlsxPlugin()],
     // Pre-bundle client deps up front so a mid-session re-optimization can't load a second React copy.
     optimizeDeps: {
       include: [

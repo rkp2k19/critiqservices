@@ -1,5 +1,10 @@
-import p1001aAsset from "@/assets/rpl-1001/property-1001-exterior.jpg.asset.json";
-import p1001b from "@/assets/rpl-1001/property-1001-living.jpg";
+import mainImg from "@/assets/rpl-1001/property-1001-complex.jpg.asset.json";
+import living from "@/assets/rpl-1001/property-1001-living-2.jpg.asset.json";
+import kitchen from "@/assets/rpl-1001/property-1001-kitchen.jpg.asset.json";
+import wardrobe from "@/assets/rpl-1001/property-1001-wardrobe.jpg.asset.json";
+import bathroom from "@/assets/rpl-1001/property-1001-bathroom.jpg.asset.json";
+import compass from "@/assets/rpl-1001/property-1001-compass.jpg.asset.json";
+import sheets from "@/assets/property_details.xlsx";
 import p1002a from "@/assets/rpl-1002/property-1002-exterior.jpg";
 import p1002b from "@/assets/rpl-1002/property-1002-living.jpg";
 import p1003a from "@/assets/rpl-1003/property-1003-living.jpg";
@@ -7,7 +12,66 @@ import p1003b from "@/assets/rpl-1003/property-1003-kitchen.jpg";
 import p1004a from "@/assets/rpl-1004/property-1004-exterior.jpg";
 import p1004b from "@/assets/rpl-1004/property-1004-bedroom.jpg";
 
-const p1001a = p1001aAsset.url;
+
+/** Main image first, other photos next, compass screenshot always last. */
+const rpl1001Images = [mainImg, living, kitchen, wardrobe, bathroom, compass].map((a) => a.url);
+
+type Row = Record<string, unknown>;
+const amenityNames = new Map(
+  (sheets["Amenities"] ?? []).map((r: Row) => [String(r["SI No"]).trim(), String(r["Amenities"]).trim()]),
+);
+
+/** Turns "1, 2, 3" from the Amenities cell into names from the Amenities sheet. */
+export function mapAmenities(cell: unknown, names: Map<string, string> = amenityNames) {
+  return String(cell ?? "")
+    .split(/[,;]/)
+    .map((n) => names.get(n.trim()))
+    .filter((n): n is string => Boolean(n));
+}
+
+const titleCase = (v: unknown) =>
+  String(v ?? "").toLowerCase().replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+function formatAvailable(v: unknown) {
+  const d = v instanceof Date ? v : new Date(String(v));
+  if (Number.isNaN(d.getTime())) return String(v ?? "");
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+}
+
+/** Description.txt files placed in each property folder (src/assets/rpl-xxxx/Description.txt). */
+const descriptionFiles = import.meta.glob("/src/assets/*/[Dd]escription.txt", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+}) as Record<string, string>;
+
+function descriptionFor(id: string) {
+  const folder = id.toLowerCase();
+  const hit = Object.entries(descriptionFiles).find(([path]) => path.split("/").at(-2) === folder);
+  return hit?.[1].trim() || undefined;
+}
+
+/** Applies spreadsheet values and Description.txt over the built-in listing. */
+function withSheetData(p: Property): Property {
+  const row = (Object.values(sheets)[0] ?? []).find(
+    (r: Row) => String(r["PROPERTY ID"]).trim().toUpperCase() === p.id,
+  );
+  const description = descriptionFor(p.id) ?? p.description;
+  if (!row) return { ...p, description };
+  const num = (k: string, fb: number) => (row[k] != null && !Number.isNaN(Number(row[k])) ? Number(row[k]) : fb);
+  return {
+    ...p,
+    description,
+    rent: num("MONTHLY RENT", p.rent),
+    deposit: num("DEPOSIT", p.deposit),
+    bhk: row["TYPE"] ? String(row["TYPE"]) : p.bhk,
+    areaSqft: num("BUILT-UP-AREA", p.areaSqft),
+    furnishing: row["FURNISHING"] ? titleCase(row["FURNISHING"]) : p.furnishing,
+    availableFrom: row["AVAILABLE"] ? formatAvailable(row["AVAILABLE"]) : p.availableFrom,
+    preferredTenants: row["PREFERRED TENANTS"] ? titleCase(row["PREFERRED TENANTS"]) : p.preferredTenants,
+    amenities: row["Amenities"] != null ? mapAmenities(row["Amenities"]) : p.amenities,
+  };
+}
 
 export type Property = {
   id: string;
@@ -29,14 +93,14 @@ export type Property = {
   amenities: string[];
 };
 
-export const PROPERTIES: Property[] = [
+const BASE_PROPERTIES: Property[] = [
   {
     id: "RPL-1001",
     title: "2 BHK Apartment",
     locality: "Koramangala",
     city: "Bangalore",
     keywords: ["koramangala", "5th block", "sony signal", "forum"],
-    images: [p1001a, p1001b],
+    images: rpl1001Images,
     description:
       "Bright, well-ventilated 2 BHK on the 3rd floor of a boutique gated building in the heart of Koramangala. East-facing balconies with greenery, Italian marble flooring, modular kitchen with chimney and hob, and two attached bathrooms. Walking distance to cafés, supermarkets and the Forum area. Covered car parking, 24x7 security and power backup for common areas.",
     rent: 30000,
@@ -103,6 +167,8 @@ export const PROPERTIES: Property[] = [
     amenities: ["Swimming pool", "Gym", "Kids play area", "Covered parking", "24x7 security"],
   },
 ];
+
+export const PROPERTIES: Property[] = BASE_PROPERTIES.map(withSheetData);
 
 /** Locations shown as quick-pick chips under the search bar. */
 export const POPULAR_LOCATIONS = PROPERTIES.map((p) => p.locality);
