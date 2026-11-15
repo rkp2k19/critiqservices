@@ -126,10 +126,38 @@ function PropertyPage() {
                 </button>
               ))}
             </div>
+
+            {unlocked && property.mapLink && (
+              <div className="mt-6 rounded-2xl bg-card p-6 shadow-card">
+                <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+                  Location map
+                </h2>
+                <div className="mt-3 overflow-hidden rounded-xl">
+                  <iframe
+                    title={`Map of ${property.address ?? property.locality}`}
+                    src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"]}&q=${encodeURIComponent(
+                      [property.address, property.locality, property.city].filter(Boolean).join(", "),
+                    )}`}
+                    className="aspect-video w-full border-0"
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+                <a
+                  href={property.mapLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-deep"
+                >
+                  <MapPin className="size-4" /> Open in Google Maps
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Details */}
-          <div className="space-y-5">
+          <div className="space-y-5 self-start lg:sticky lg:top-6">
             <div className="rounded-2xl bg-card p-6 shadow-card">
               <span className="rounded-md bg-highlight px-2.5 py-1 font-display text-sm font-bold text-highlight-foreground">
                 {property.id}
@@ -206,34 +234,6 @@ function PropertyPage() {
                     ))}
                   </ul>
                 </div>
-
-                {property.mapLink && (
-                  <div className="rounded-2xl bg-card p-6 shadow-card">
-                    <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-                      Location map
-                    </h2>
-                    <div className="mt-3 overflow-hidden rounded-xl">
-                      <iframe
-                        title={`Map of ${property.address ?? property.locality}`}
-                        src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"]}&q=${encodeURIComponent(
-                          [property.address, property.locality, property.city].filter(Boolean).join(", "),
-                        )}`}
-                        className="aspect-[4/3] w-full border-0"
-                        loading="lazy"
-                        allowFullScreen
-                        referrerPolicy="no-referrer-when-downgrade"
-                      />
-                    </div>
-                    <a
-                      href={property.mapLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-deep"
-                    >
-                      <MapPin className="size-4" /> Open in Google Maps
-                    </a>
-                  </div>
-                )}
 
                 <div className="flex items-start gap-3 rounded-2xl border border-dashed border-primary/40 bg-accent p-5 text-sm text-accent-foreground">
                   <Lock className="mt-0.5 size-4 shrink-0" />
