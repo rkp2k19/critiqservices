@@ -38,8 +38,8 @@ function formatAvailable(v: unknown) {
   return d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 }
 
-/** Description.txt files placed in each property folder (src/assets/rpl-xxxx/Description.txt). */
-const descriptionFiles = import.meta.glob("/src/assets/*/[Dd]escription.txt", {
+/** Description files placed in each property folder (src/assets/rpl-xxxx/rpl-xxxx_description.txt). */
+const descriptionFiles = import.meta.glob("/src/assets/*/*_description.txt", {
   query: "?raw",
   import: "default",
   eager: true,
@@ -62,6 +62,7 @@ function withSheetData(p: Property): Property {
   return {
     ...p,
     description,
+    address: row["Address"] ? String(row["Address"]).trim() : p.address,
     rent: num("MONTHLY RENT", p.rent),
     deposit: num("DEPOSIT", p.deposit),
     bhk: row["TYPE"] ? String(row["TYPE"]) : p.bhk,
@@ -78,6 +79,8 @@ export type Property = {
   title: string;
   /** Locality only. The complete address is never shipped to the browser. */
   locality: string;
+  /** Society/building name from the spreadsheet's Address column, shown with the location pin. */
+  address?: string | undefined;
   city: string;
   /** Extra place names a tenant might type for this listing. */
   keywords: string[];

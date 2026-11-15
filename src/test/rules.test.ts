@@ -42,9 +42,10 @@ describe("verification", () => {
   });
 });
 
-describe("listings never expose a complete address", () => {
-  it("has no address field on any property", () => {
-    for (const p of PROPERTIES) expect(Object.keys(p)).not.toContain("address");
+describe("address from the spreadsheet", () => {
+  it("shows the Address column value for RPL-1001", () => {
+    const p = PROPERTIES.find((x) => x.id === "RPL-1001")!;
+    expect(p.address).toBe("Shriram WYTField");
   });
 });
 
