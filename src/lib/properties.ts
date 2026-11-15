@@ -1,11 +1,11 @@
-import p1001aAsset from "@/assets/property-1001-exterior.jpg.asset.json";
-import p1001b from "@/assets/property-1001-living.jpg";
-import p1002a from "@/assets/property-1002-exterior.jpg";
-import p1002b from "@/assets/property-1002-living.jpg";
-import p1003a from "@/assets/property-1003-living.jpg";
-import p1003b from "@/assets/property-1003-kitchen.jpg";
-import p1004a from "@/assets/property-1004-exterior.jpg";
-import p1004b from "@/assets/property-1004-bedroom.jpg";
+import p1001aAsset from "@/assets/rpl-1001/property-1001-exterior.jpg.asset.json";
+import p1001b from "@/assets/rpl-1001/property-1001-living.jpg";
+import p1002a from "@/assets/rpl-1002/property-1002-exterior.jpg";
+import p1002b from "@/assets/rpl-1002/property-1002-living.jpg";
+import p1003a from "@/assets/rpl-1003/property-1003-living.jpg";
+import p1003b from "@/assets/rpl-1003/property-1003-kitchen.jpg";
+import p1004a from "@/assets/rpl-1004/property-1004-exterior.jpg";
+import p1004b from "@/assets/rpl-1004/property-1004-bedroom.jpg";
 
 const p1001a = p1001aAsset.url;
 
