@@ -23,7 +23,7 @@ describe("location search", () => {
 
 describe("property description preview", () => {
   it("shows only the first 100 characters before Read more", () => {
-    const text = PROPERTIES[0].description;
+    const text = PROPERTIES[0]!.description;
     expect(text.length).toBeGreaterThan(100);
     expect(previewDescription(text).replace("…", "").length).toBeLessThanOrEqual(100);
   });
