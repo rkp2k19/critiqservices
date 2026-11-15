@@ -80,7 +80,7 @@ export type Property = {
   /** Locality only. The complete address is never shipped to the browser. */
   locality: string;
   /** Society/building name from the spreadsheet's Address column, shown with the location pin. */
-  address?: string;
+  address?: string | undefined;
   city: string;
   /** Extra place names a tenant might type for this listing. */
   keywords: string[];
