@@ -30,7 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 <!-- AGENT-MEMORY:BEGIN -->
-- Property listings live in `src/lib/properties.ts` as static data; the type has no address field so a complete address can never reach the browser.
+- Property listings live in `src/lib/properties.ts` as static data merged with `src/assets/property_details.xlsx` at build time; the sheet's Address column (society/building name) is shown with the location pin, but no full street address is ever shipped.
 - OTP verification is currently demo-only (code generated in the browser and shown in a toast) behind `src/lib/verification.ts`; swap `sendCode` in `VerifyDialog` for real SMS/email server calls when those services are connected.
 - Rule tests live in `src/test/rules.test.ts` (search filter, 100-char preview, both-verified unlock).
 <!-- AGENT-MEMORY:END -->
