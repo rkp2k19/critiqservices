@@ -8,10 +8,9 @@ export function xlsxPlugin() {
     enforce: "pre" as const,
     load(id: string) {
       if (!id.endsWith(".xlsx")) return null;
-      this.addWatchFile(id);
       const wb = XLSX.read(readFileSync(id), { cellDates: true });
       const out: Record<string, unknown[]> = {};
-      for (const name of wb.SheetNames) out[name] = XLSX.utils.sheet_to_json(wb.Sheets[name], { raw: true });
+      for (const name of wb.SheetNames) out[name] = XLSX.utils.sheet_to_json(wb.Sheets[name]!, { raw: true });
       return `export default ${JSON.stringify(out)};`;
     },
   };
