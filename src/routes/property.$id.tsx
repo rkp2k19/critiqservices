@@ -149,7 +149,7 @@ function PropertyPage() {
               <h2 className="mt-5 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
                 Description
               </h2>
-              <p className="mt-2 leading-relaxed">
+              <p className="mt-2 whitespace-pre-line leading-relaxed">
                 {unlocked ? property.description : previewDescription(property.description)}
                 {!unlocked && (
                   <>
