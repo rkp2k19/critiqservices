@@ -110,7 +110,7 @@ function Index() {
           </div>
         </section>
 
-        <section className="mx-auto -mt-10 max-w-6xl px-4 sm:px-6" aria-live="polite">
+        <section className="relative z-10 mx-auto -mt-10 max-w-6xl px-4 sm:px-6" aria-live="polite">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-2 rounded-2xl bg-card px-5 py-4 shadow-card">
             <h2 className="text-xl font-bold sm:text-2xl">
               {q ? (
