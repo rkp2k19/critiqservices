@@ -1,9 +1,9 @@
-import mainImg from "@/assets/rpl-1001/property-1001-complex.jpg.asset.json";
-import living from "@/assets/rpl-1001/property-1001-living-2.jpg.asset.json";
-import kitchen from "@/assets/rpl-1001/property-1001-kitchen.jpg.asset.json";
-import wardrobe from "@/assets/rpl-1001/property-1001-wardrobe.jpg.asset.json";
-import bathroom from "@/assets/rpl-1001/property-1001-bathroom.jpg.asset.json";
-import compass from "@/assets/rpl-1001/property-1001-compass.jpg.asset.json";
+import mainImg from "@/assets/rpl-1001/property-1001-complex.jpg";
+import living from "@/assets/rpl-1001/property-1001-living-2.jpg";
+import kitchen from "@/assets/rpl-1001/property-1001-kitchen.jpg";
+import wardrobe from "@/assets/rpl-1001/property-1001-wardrobe.jpg";
+import bathroom from "@/assets/rpl-1001/property-1001-bathroom.jpg";
+import compass from "@/assets/rpl-1001/property-1001-compass.jpg";
 import sheets from "@/assets/property_details.xlsx";
 import p1002a from "@/assets/rpl-1002/property-1002-exterior.jpg";
 import p1002b from "@/assets/rpl-1002/property-1002-living.jpg";
@@ -14,7 +14,7 @@ import p1004b from "@/assets/rpl-1004/property-1004-bedroom.jpg";
 
 
 /** Main image first, other photos next, compass screenshot always last. */
-const rpl1001Images = [mainImg, living, kitchen, wardrobe, bathroom, compass].map((a) => a.url);
+const rpl1001Images = [mainImg, living, kitchen, wardrobe, bathroom, compass];
 
 type Row = Record<string, unknown>;
 const amenityNames = new Map(

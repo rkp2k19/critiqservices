@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin, Phone } from "lucide-react";
-import logo from "@/assets/replad_logo.jpeg.asset.json";
+import logo from "@/assets/replad_logo.jpeg";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import {
   CONTACT_DISPLAY,
@@ -15,7 +15,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link to="/" search={{}} className="shrink-0" aria-label="REPLAD Home Services – home">
           <img
-            src={logo.url}
+            src={logo}
             alt="REPLAD Home Services – One stop solutions for your home"
             width={1600}
             height={600}
