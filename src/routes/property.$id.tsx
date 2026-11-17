@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { maskAmount, formatRupees, getPropertyById, previewDescription, propertyAddress } from "@/lib/properties";
+import { maskAmount, getPropertyById, previewDescription, propertyAddress } from "@/lib/properties";
 import {
   isValidEmail,
   isValidIndianMobile,

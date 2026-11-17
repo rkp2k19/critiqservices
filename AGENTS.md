@@ -31,6 +31,6 @@ use the editor.
 
 <!-- AGENT-MEMORY:BEGIN -->
 - Build property listings exclusively from active rows in `src/assets/property_details.xlsx`; show every image in each property's asset folder (any format, max 8) with main-cover.jpg first and compass last, and normalize literal description newlines so sheet updates drive consistent displays without sample fallbacks.
-- OTP verification is temporarily removed: Read more unlocks full details directly. `VerifyDialog` and `src/lib/verification.ts` are kept for re-enabling; swap `sendCode` for real SMS/email server calls when those services are connected.
-- Rule tests live in `src/test/rules.test.ts` (search filter, 100-char preview, both-verified unlock).
+- OTP is off: Read more asks for mobile + email (format-checked only) then unlocks details with masked rent/deposit. `VerifyDialog` and `src/lib/verification.ts` are kept for re-enabling; swap `sendCode` for real SMS/email server calls when those services are connected.
+- Rule tests live in `src/test/rules.test.ts` (search filter, 50-word preview, rent/deposit masking).
 <!-- AGENT-MEMORY:END -->
