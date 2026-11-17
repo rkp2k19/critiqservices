@@ -78,11 +78,15 @@ describe("spreadsheet data for RPL-1001", () => {
     expect(p.amenities).toContain("Senior Citizen Sit-Outs");
     expect(p.amenities).toHaveLength(12);
   });
-  it("puts the main image first and the compass photo last", () => {
+  it("puts the main-cover image first and the compass photo last", () => {
     if (!p) throw new Error("RPL-1001 missing");
     expect(p.images).toHaveLength(7);
-    expect(p.images[0]).toContain("exterior");
+    expect(p.images[0]).toContain("main-cover");
     expect(p.images.at(-1)).toContain("compass");
+  });
+  it("takes the society name from the first part of the Address", () => {
+    expect(p?.society).toBe("Shriram WYTField");
+    expect(PROPERTIES[1]?.society).toBe("Shriram GreenField");
   });
 });
 
@@ -112,13 +116,22 @@ describe("spreadsheet-only listing rules", () => {
     expect(PROPERTIES[1]?.rent).toBe(38000);
   });
 
-  it("resolves comma-separated local photos with exterior first and compass last", () => {
+  it("resolves comma-separated local photos with main-cover first and compass last", () => {
     const files = {
       "/src/assets/rpl-2001/property-2001-living.jpg": "living.jpg",
-      "/src/assets/rpl-2001/property-2001-exterior.jpg": "exterior.jpg",
+      "/src/assets/rpl-2001/main-cover.jpg": "main-cover.jpg",
       "/src/assets/rpl-2001/property-2001-compass.jpg": "compass.jpg",
     };
-    expect(resolvePropertyImages("RPL-2001", "image-2001-compass.jpg, image-2001-living.jpg, image-2001-exterior.jpg, missing.jpg", files)).toEqual(["exterior.jpg", "living.jpg", "compass.jpg"]);
+    expect(resolvePropertyImages("RPL-2001", "image-2001-compass.jpg, image-2001-living.jpg, image-2001-exterior.jpg, missing.jpg", files)).toEqual(["main-cover.jpg", "living.jpg", "compass.jpg"]);
     expect(PROPERTIES[1]?.images).toHaveLength(2);
+    expect(PROPERTIES[1]?.images[0]).toContain("main-cover");
+  });
+
+  it("shows the current date when availableFrom is in the past", () => {
+    const row = propertiesFromRows([{ id: "RPL-3001", "listing status": "Active", availableFrom: "2020-01-15" }])[0];
+    const today = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+    expect(row?.availableFrom).toBe(today);
+    const future = propertiesFromRows([{ id: "RPL-3002", "listing status": "Active", availableFrom: "2099-01-15" }])[0];
+    expect(future?.availableFrom).toBe("15 January 2099");
   });
 });

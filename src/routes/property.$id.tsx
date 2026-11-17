@@ -30,9 +30,9 @@ export const Route = createFileRoute("/property/$id")({
   },
   head: ({ loaderData }) => {
     const p = loaderData?.property;
-    const title = p ? `Property ${p.id} – Rent in Bangalore | REPLAD` : "Property | REPLAD";
+    const title = p ? `${p.id} – Rent in Bangalore | REPLAD` : "Property | REPLAD";
     const description = p
-      ? `${previewDescription(p.description)} View photos of property ${p.id} on REPLAD Tenant Search.`
+      ? `${previewDescription(p.description)} View photos of ${p.id} on REPLAD Tenant Search.`
       : "Rental property in Bangalore on REPLAD Tenant Search.";
     return {
       meta: [
@@ -99,7 +99,7 @@ function PropertyPage() {
             <div className="overflow-hidden rounded-2xl bg-muted shadow-card">
               <img
                 src={property.images[active]}
-                alt={`Property ${property.id} – photo ${active + 1}`}
+                alt={`${property.id} – photo ${active + 1}`}
                 width={1280}
                 height={896}
                 className="aspect-[4/3] w-full object-cover"
@@ -133,9 +133,9 @@ function PropertyPage() {
               <div className="mt-6 space-y-5">
                 <div className="grid grid-cols-2 gap-3">
                   <Fact icon={<IndianRupee />} label="Monthly rent" value={formatRupees(property.rent)} />
-                  <Fact icon={<Wallet />} label="Deposit" value={formatRupees(property.deposit)} />
+                  <Fact icon={<Wallet />} label="Security Deposit" value={formatRupees(property.deposit)} />
                   <Fact icon={<BedDouble />} label="Type" value={property.bhk} />
-                  <Fact icon={<Ruler />} label="Built-up area" value={`${property.areaSqft} sq.ft`} />
+                  <Fact icon={<Ruler />} label="Super Built-up area" value={`${property.areaSqft} sq.ft`} />
                   <Fact icon={<Sofa />} label="Furnishing" value={property.furnishing} />
                   <Fact icon={<CalendarDays />} label="Available" value={property.availableFrom} />
                   <div className="col-span-2">
@@ -177,14 +177,14 @@ function PropertyPage() {
               </span>
               {unlocked && (
                 <h1 className="mt-4 text-3xl font-extrabold">
-                  {property.title || `Property ${property.id}`}
+                  {property.title || property.id}
                   <span className="mt-1 flex items-center gap-1.5 text-[14pt] font-bold text-foreground">
                     <MapPin className="size-4 text-primary" />{" "}
                     {propertyAddress(property)}
                   </span>
                 </h1>
               )}
-              {!unlocked && <h1 className="sr-only">Property {property.id}</h1>}
+              {!unlocked && <h1 className="sr-only">{property.id}</h1>}
 
               <h2 className="mt-5 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
                 Description
