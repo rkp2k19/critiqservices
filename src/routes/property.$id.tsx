@@ -4,6 +4,8 @@ import {
   ArrowLeft,
   BadgeCheck,
   BedDouble,
+  ChevronLeft,
+  ChevronRight,
   CalendarDays,
   Check,
   IndianRupee,
@@ -17,8 +19,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { formatRupees, getPropertyById, previewDescription, propertyAddress } from "@/lib/properties";
-import { loadVerifiedVisitor, saveVerifiedVisitor, type VerifiedVisitor } from "@/lib/verification";
+import { maskAmount, getPropertyById, previewDescription, propertyAddress } from "@/lib/properties";
+import {
+  isValidEmail,
+  isValidIndianMobile,
+  loadVerifiedVisitor,
+  normalizeIndianMobile,
+  saveVerifiedVisitor,
+  type VerifiedVisitor,
+} from "@/lib/verification";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { CONTACT_DISPLAY, CONTACT_TEL } from "@/lib/contact";
 
 export const Route = createFileRoute("/property/$id")({
@@ -72,11 +90,23 @@ function PropertyPage() {
 
   const unlocked = visitor !== null;
 
-  // OTP verification is temporarily removed: Read more unlocks the full details directly.
-  function handleReadMore() {
-    const v: VerifiedVisitor = { mobile: "", email: "" };
+  const [askOpen, setAskOpen] = useState(false);
+  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const count = property.images.length;
+  const prev = () => setActive((i) => (i - 1 + count) % count);
+  const next = () => setActive((i) => (i + 1) % count);
+
+  // Read more asks for mobile + email (no OTP for now), then unlocks the details.
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!isValidIndianMobile(mobile)) return setFormError("Enter a valid 10-digit Indian mobile number.");
+    if (!isValidEmail(email)) return setFormError("Enter a valid email address.");
+    const v: VerifiedVisitor = { mobile: normalizeIndianMobile(mobile), email: email.trim() };
     saveVerifiedVisitor(v);
     setVisitor(v);
+    setAskOpen(false);
   }
 
   return (
@@ -95,7 +125,7 @@ function PropertyPage() {
         <div className="mt-5 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
           {/* Gallery */}
           <div>
-            <div className="overflow-hidden rounded-2xl bg-muted shadow-card">
+            <div className="relative overflow-hidden rounded-2xl bg-muted shadow-card">
               <img
                 src={property.images[active]}
                 alt={`${property.id} – photo ${active + 1}`}
@@ -103,6 +133,19 @@ function PropertyPage() {
                 height={896}
                 className="aspect-[4/3] w-full object-cover"
               />
+              {count > 1 && (
+                <>
+                  <Button type="button" size="icon" variant="secondary" onClick={prev} aria-label="Previous photo" className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-card/80 shadow-card hover:bg-card">
+                    <ChevronLeft className="size-5" />
+                  </Button>
+                  <Button type="button" size="icon" variant="secondary" onClick={next} aria-label="Next photo" className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-card/80 shadow-card hover:bg-card">
+                    <ChevronRight className="size-5" />
+                  </Button>
+                  <span className="absolute bottom-3 right-3 rounded-full bg-card/80 px-2.5 py-0.5 text-xs font-semibold">
+                    {active + 1} / {count}
+                  </span>
+                </>
+              )}
             </div>
             <div className="mt-3 grid grid-cols-4 gap-3">
               {property.images.map((src, i) => (
@@ -130,9 +173,12 @@ function PropertyPage() {
 
             {unlocked && (
               <div className="mt-6 space-y-5">
+                <p className="rounded-xl bg-success/10 px-4 py-3 text-sm font-semibold text-success">
+                  Details messaged to your mobile or Contact
+                </p>
                 <div className="grid grid-cols-2 gap-3">
-                  <Fact icon={<IndianRupee />} label="Monthly rent" value={formatRupees(property.rent)} />
-                  <Fact icon={<Wallet />} label="Security Deposit" value={formatRupees(property.deposit)} />
+                  <Fact icon={<IndianRupee />} label="Monthly rent" value={maskAmount(property.rent, 1)} />
+                  <Fact icon={<Wallet />} label="Security Deposit" value={maskAmount(property.deposit, 0)} />
                   <Fact icon={<BedDouble />} label="Type" value={property.bhk} />
                   <Fact icon={<Ruler />} label="Super Built-up area" value={`${property.areaSqft} sq.ft`} />
                   <Fact icon={<Sofa />} label="Furnishing" value={property.furnishing} />
@@ -172,11 +218,11 @@ function PropertyPage() {
           <div className="space-y-5 self-start lg:sticky lg:top-6">
             <div className="rounded-2xl bg-card p-6 shadow-card">
               <span className="rounded-md bg-highlight px-2.5 py-1 font-display text-sm font-bold text-highlight-foreground">
-                {property.bhk || property.id}
+                {property.id}
               </span>
               {unlocked && (
                 <h1 className="mt-4 text-3xl font-extrabold">
-                  {property.title || property.id}
+                  {property.bhk || property.title}
                   <span className="mt-1 flex items-center gap-1.5 text-[14pt] font-bold text-foreground">
                     <MapPin className="size-4 text-primary" />{" "}
                     {propertyAddress(property)}
@@ -196,7 +242,7 @@ function PropertyPage() {
                     <Button
                       variant="link"
                       type="button"
-                      onClick={handleReadMore}
+                      onClick={() => setAskOpen(true)}
                       className="h-auto p-0 font-semibold text-primary underline underline-offset-4 hover:text-primary-deep"
                     >
                       Read more
@@ -208,7 +254,7 @@ function PropertyPage() {
               {!unlocked && (
                 <div className="mt-5 flex items-start gap-3 rounded-xl bg-secondary p-4 text-sm text-secondary-foreground">
                   <Lock className="mt-0.5 size-4 shrink-0" />
-                  Read more to see rent, deposit, size, amenities and the full description.
+                  Read more and share your mobile number and email to see all details.
                 </div>
               )}
 
@@ -236,6 +282,27 @@ function PropertyPage() {
           </div>
         </div>
       </main>
+
+      <Dialog open={askOpen} onOpenChange={setAskOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">See full details</DialogTitle>
+            <DialogDescription>Enter your mobile number and email ID to view this property.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="ask-mobile">Mobile number</Label>
+              <Input id="ask-mobile" type="tel" inputMode="tel" placeholder="10-digit mobile number" value={mobile} maxLength={14} onChange={(e) => { setMobile(e.target.value); setFormError(null); }} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ask-email">Email ID</Label>
+              <Input id="ask-email" type="email" placeholder="you@example.com" value={email} maxLength={255} onChange={(e) => { setEmail(e.target.value); setFormError(null); }} />
+            </div>
+            {formError && <p className="text-sm text-destructive">{formError}</p>}
+            <Button type="submit" className="w-full">Submit</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <SiteFooter />
     </div>

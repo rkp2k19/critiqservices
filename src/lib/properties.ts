@@ -117,9 +117,18 @@ export function getPropertyById(id: string) {
 }
 
 export const PREVIEW_LENGTH = 100;
-export function previewDescription(text: string, length = PREVIEW_LENGTH) {
-  if (text.length <= length) return text;
-  return `${text.slice(0, length).trimEnd()}…`;
+export const PREVIEW_WORDS = 50;
+/** Shows only the first 50 words of the description before Read more. */
+export function previewDescription(text: string, words = PREVIEW_WORDS) {
+  const parts = text.trim().split(/\s+/);
+  if (parts.length <= words) return text;
+  return `${parts.slice(0, words).join(" ")}…`;
+}
+
+/** Masks every digit of a rupee amount with * except the digit at `visibleIndex` (0-based). */
+export function maskAmount(amount: number, visibleIndex: number) {
+  let i = -1;
+  return formatRupees(amount).replace(/\d/g, (d) => (++i === visibleIndex ? d : "*"));
 }
 
 export function formatRupees(amount: number) {

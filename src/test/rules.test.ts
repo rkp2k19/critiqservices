@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   filterPropertiesByLocation,
   previewDescription,
+  maskAmount,
   PROPERTIES,
   propertyAddress,
   normalizeDescription,
@@ -34,7 +35,15 @@ describe("location search", () => {
 });
 
 describe("property description preview", () => {
-  it("shows only the first 100 characters before Read more", () => {
+  it("shows only the first 50 words before Read more", () => {
+    const long = Array.from({ length: 80 }, (_, i) => `w${i}`).join(" ");
+    expect(previewDescription(long).replace("…", "").split(" ").length).toBe(50);
+  });
+  it("masks rent except 2nd digit and deposit except 1st digit", () => {
+    expect(maskAmount(30000, 1)).toBe("₹*0,***");
+    expect(maskAmount(100000, 0)).toBe("₹1,**,***");
+  });
+  it.skip("legacy 100-char preview", () => {
     const text = PROPERTIES[0]?.description ?? "";
     expect(text.length).toBeGreaterThan(100);
     expect(previewDescription(text).replace("…", "").length).toBeLessThanOrEqual(100);
