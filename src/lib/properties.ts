@@ -71,9 +71,9 @@ export function resolvePropertyImages(id: string, cell: unknown, files = imageFi
 /** The spreadsheet is the sole source of property rows and display attributes. */
 export function propertiesFromRows(rows: Row[], files = imageFiles): Property[] {
   return rows.filter((row) => String(row["listing status"] ?? "").trim().toLowerCase() === "active")
-    .filter((row) => String(row.id ?? "").trim())
+    .filter((row) => String(row["id"] ?? "").trim())
     .map((row) => {
-      const id = String(row.id).trim();
+      const id = String(row["id"]).trim();
       const text = (key: string) => String(row[key] ?? "");
       const num = (key: string) => Number.isFinite(Number(row[key])) ? Number(row[key]) : 0;
       return {
@@ -87,13 +87,13 @@ export function propertiesFromRows(rows: Row[], files = imageFiles): Property[] 
         bhk: text("bhk"),
         areaSqft: num("areaSqft"),
         furnishing: text("furnishing"),
-        availableFrom: formatAvailable(row.availableFrom),
+        availableFrom: formatAvailable(row["availableFrom"]),
         preferredTenants: text("preferredTenants"),
-        amenities: mapAmenities(row.amenities),
+        amenities: mapAmenities(row["amenities"]),
         mapLink: text("Location Map link"),
-        keywords: splitCommaSeparated(row.keywords),
+        keywords: splitCommaSeparated(row["keywords"]),
         description: normalizeDescription(text("description")),
-        images: resolvePropertyImages(id, row.images, files),
+        images: resolvePropertyImages(id, row["images"], files),
       };
     });
 }
