@@ -4,7 +4,7 @@ type Row = Record<string, unknown>;
 const amenityNames = new Map(
   (sheets["Amenities"] ?? []).map((r: Row) => [String(r["SI No"]).trim(), String(r["Amenities"]).trim()]),
 );
-const imageFiles = import.meta.glob("/src/assets/*/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}", {
+const imageFiles = import.meta.glob("/src/assets/*/*.{jpg,jpeg,png,webp,gif,avif,svg,bmp,tif,tiff,JPG,JPEG,PNG,WEBP,GIF,AVIF,SVG,BMP,TIF,TIFF}", {
   query: "?url",
   import: "default",
   eager: true,
@@ -55,20 +55,20 @@ function formatAvailable(v: unknown) {
   return effective.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 }
 
-/** Resolve only local files named in the sheet; legacy image- names match property- files, and exterior shots live in main-cover.jpg. */
-export function resolvePropertyImages(id: string, cell: unknown, files = imageFiles) {
+export const MAX_PROPERTY_IMAGES = 8;
+
+/** Show every image in the property's asset folder (any format): main-cover first, compass last, capped at 8. */
+export function resolvePropertyImages(id: string, _cell?: unknown, files = imageFiles) {
   const folder = `/src/assets/${id.toLowerCase()}/`;
-  const rank = (name: string) => /compass/i.test(name) ? 2 : /exterior/i.test(name) ? 0 : 1;
-  const names = splitCommaSeparated(cell).sort((a, b) => rank(a) - rank(b));
-  return [...new Set(names.flatMap((name) => {
-    const filename = name.split("/").at(-1) ?? name;
-    const candidates = [filename, filename.replace(/^image-/i, "property-")];
-    if (/exterior/i.test(filename)) candidates.push("main-cover.jpg");
-    const match = Object.entries(files).find(([path]) =>
-      path.toLowerCase().startsWith(folder) && candidates.some((candidate) => path.split("/").at(-1)?.toLowerCase() === candidate.toLowerCase()),
-    );
-    return match ? [match[1]] : [];
-  }))];
+  const rank = (path: string) => (/main-cover/i.test(path) ? 0 : /compass/i.test(path) ? 2 : 1);
+  const urls = Object.entries(files)
+    .filter(([path]) => path.toLowerCase().startsWith(folder))
+    .sort(([a], [b]) => rank(a) - rank(b) || a.localeCompare(b))
+    .map(([, url]) => url);
+  if (urls.length <= MAX_PROPERTY_IMAGES) return urls;
+  const compass = urls.filter((u) => /compass/i.test(u));
+  const rest = urls.filter((u) => !/compass/i.test(u));
+  return [...rest.slice(0, MAX_PROPERTY_IMAGES - compass.length), ...compass];
 }
 
 /** The spreadsheet is the sole source of property rows and display attributes. */
