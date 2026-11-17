@@ -19,12 +19,9 @@ export function PropertyCard({ property, index }: { property: Property; index: n
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
-      <div className="flex items-center justify-between px-4 py-3">
+      <div className="flex items-center px-4 py-3">
         <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
           {property.society}
-        </span>
-        <span className="rounded-md bg-highlight px-2 py-0.5 font-display text-sm font-bold text-highlight-foreground">
-          {property.id}
         </span>
       </div>
     </Link>
