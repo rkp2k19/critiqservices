@@ -13,6 +13,7 @@ const imageFiles = import.meta.glob("/src/assets/*/*.{jpg,jpeg,png,webp,JPG,JPEG
 export type Property = {
   id: string;
   title: string;
+  society: string;
   locality: string;
   address?: string | undefined;
   mapLink?: string | undefined;
@@ -50,10 +51,11 @@ function formatAvailable(v: unknown) {
   if (!v) return "";
   const d = v instanceof Date ? v : new Date(String(v));
   if (Number.isNaN(d.getTime())) return String(v);
-  return d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  const effective = d < new Date() ? new Date() : d;
+  return effective.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 }
 
-/** Resolve only local files named in the sheet; legacy image- names match property- files. */
+/** Resolve only local files named in the sheet; legacy image- names match property- files, and exterior shots live in main-cover.jpg. */
 export function resolvePropertyImages(id: string, cell: unknown, files = imageFiles) {
   const folder = `/src/assets/${id.toLowerCase()}/`;
   const rank = (name: string) => /compass/i.test(name) ? 2 : /exterior/i.test(name) ? 0 : 1;
@@ -61,6 +63,7 @@ export function resolvePropertyImages(id: string, cell: unknown, files = imageFi
   return [...new Set(names.flatMap((name) => {
     const filename = name.split("/").at(-1) ?? name;
     const candidates = [filename, filename.replace(/^image-/i, "property-")];
+    if (/exterior/i.test(filename)) candidates.push("main-cover.jpg");
     const match = Object.entries(files).find(([path]) =>
       path.toLowerCase().startsWith(folder) && candidates.some((candidate) => path.split("/").at(-1)?.toLowerCase() === candidate.toLowerCase()),
     );
@@ -79,6 +82,7 @@ export function propertiesFromRows(rows: Row[], files = imageFiles): Property[] 
       return {
         id,
         title: text("title"),
+        society: text("Address").split(",")[0]?.trim() ?? "",
         address: text("Address"),
         locality: text("locality"),
         city: text("city"),

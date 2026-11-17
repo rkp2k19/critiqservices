@@ -12,7 +12,7 @@ export function PropertyCard({ property, index }: { property: Property; index: n
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={property.images[0]}
-          alt={`Property ${property.id}`}
+          alt={property.id}
           width={1280}
           height={896}
           loading="lazy"
@@ -21,7 +21,7 @@ export function PropertyCard({ property, index }: { property: Property; index: n
       </div>
       <div className="flex items-center justify-between px-4 py-3">
         <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-          Property ID
+          {property.society}
         </span>
         <span className="rounded-md bg-highlight px-2 py-0.5 font-display text-sm font-bold text-highlight-foreground">
           {property.id}
