@@ -30,7 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 <!-- AGENT-MEMORY:BEGIN -->
-- Property listings merge static data with `src/assets/property_details.xlsx` at build time; use one address formatter for the pin and map, let spreadsheet mapped locations override sample search terms, and normalize literal newline escapes before previewing descriptions to prevent inconsistent displays.
+- Build property listings exclusively from active rows in `src/assets/property_details.xlsx`; resolve local image filenames (including image-/property- aliases) within each property's asset folder, sort exterior first and compass last, and normalize literal description newlines so sheet updates drive consistent displays without sample fallbacks.
 - OTP verification is currently demo-only (code generated in the browser and shown in a toast) behind `src/lib/verification.ts`; swap `sendCode` in `VerifyDialog` for real SMS/email server calls when those services are connected.
 - Rule tests live in `src/test/rules.test.ts` (search filter, 100-char preview, both-verified unlock).
 <!-- AGENT-MEMORY:END -->
