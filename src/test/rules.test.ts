@@ -116,13 +116,16 @@ describe("spreadsheet-only listing rules", () => {
     expect(PROPERTIES[1]?.rent).toBe(38000);
   });
 
-  it("resolves comma-separated local photos with main-cover first and compass last", () => {
-    const files = {
-      "/src/assets/rpl-2001/property-2001-living.jpg": "living.jpg",
-      "/src/assets/rpl-2001/main-cover.jpg": "main-cover.jpg",
-      "/src/assets/rpl-2001/property-2001-compass.jpg": "compass.jpg",
-    };
-    expect(resolvePropertyImages("RPL-2001", "image-2001-compass.jpg, image-2001-living.jpg, image-2001-exterior.jpg, missing.jpg", files)).toEqual(["main-cover.jpg", "living.jpg", "compass.jpg"]);
+  it("shows every image in the property folder, main-cover first, compass last, capped at 8", () => {
+    const files = Object.fromEntries(
+      ["main-cover.jpg", "a.jpg", "b.png", "c.webp", "d.gif", "e.avif", "f.jpeg", "g.svg", "h.bmp", "compass.jpg"]
+        .map((n) => [`/src/assets/rpl-2001/${n}`, n]),
+    );
+    const images = resolvePropertyImages("RPL-2001", "", files);
+    expect(images).toHaveLength(8);
+    expect(images[0]).toBe("main-cover.jpg");
+    expect(images.at(-1)).toBe("compass.jpg");
+    expect(resolvePropertyImages("RPL-2001", "", {})).toEqual([]);
     expect(PROPERTIES[1]?.images).toHaveLength(2);
     expect(PROPERTIES[1]?.images[0]).toContain("main-cover");
   });

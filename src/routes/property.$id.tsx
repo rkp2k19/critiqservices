@@ -17,7 +17,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { VerifyDialog } from "@/components/site/VerifyDialog";
 import { formatRupees, getPropertyById, previewDescription, propertyAddress } from "@/lib/properties";
 import { loadVerifiedVisitor, saveVerifiedVisitor, type VerifiedVisitor } from "@/lib/verification";
 import { CONTACT_DISPLAY, CONTACT_TEL } from "@/lib/contact";
@@ -64,7 +63,6 @@ function PropertyPage() {
   const { property } = Route.useLoaderData();
   const [active, setActive] = useState(0);
   const [visitor, setVisitor] = useState<VerifiedVisitor | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     setVisitor(loadVerifiedVisitor());
@@ -74,10 +72,11 @@ function PropertyPage() {
 
   const unlocked = visitor !== null;
 
-  function handleVerified(v: VerifiedVisitor) {
+  // OTP verification is temporarily removed: Read more unlocks the full details directly.
+  function handleReadMore() {
+    const v: VerifiedVisitor = { mobile: "", email: "" };
     saveVerifiedVisitor(v);
     setVisitor(v);
-    setDialogOpen(false);
   }
 
   return (
@@ -173,7 +172,7 @@ function PropertyPage() {
           <div className="space-y-5 self-start lg:sticky lg:top-6">
             <div className="rounded-2xl bg-card p-6 shadow-card">
               <span className="rounded-md bg-highlight px-2.5 py-1 font-display text-sm font-bold text-highlight-foreground">
-                {property.id}
+                {property.bhk || property.id}
               </span>
               {unlocked && (
                 <h1 className="mt-4 text-3xl font-extrabold">
@@ -197,7 +196,7 @@ function PropertyPage() {
                     <Button
                       variant="link"
                       type="button"
-                      onClick={() => setDialogOpen(true)}
+                      onClick={handleReadMore}
                       className="h-auto p-0 font-semibold text-primary underline underline-offset-4 hover:text-primary-deep"
                     >
                       Read more
@@ -209,12 +208,11 @@ function PropertyPage() {
               {!unlocked && (
                 <div className="mt-5 flex items-start gap-3 rounded-xl bg-secondary p-4 text-sm text-secondary-foreground">
                   <Lock className="mt-0.5 size-4 shrink-0" />
-                  Verify your mobile number and email to see rent, deposit, size, amenities and the
-                  full description.
+                  Read more to see rent, deposit, size, amenities and the full description.
                 </div>
               )}
 
-              {unlocked && (
+              {unlocked && visitor.email && (
                 <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-success">
                   <BadgeCheck className="size-4" /> Verified as {visitor.email}
                 </p>
@@ -240,8 +238,6 @@ function PropertyPage() {
       </main>
 
       <SiteFooter />
-
-      <VerifyDialog open={dialogOpen} onOpenChange={setDialogOpen} onVerified={handleVerified} />
     </div>
   );
 }

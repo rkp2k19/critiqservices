@@ -1,5 +1,5 @@
 # Requested changes
-- [x] Rename exterior photos to main-cover.jpg and use them as the listing cover.
-- [x] Show society name (first part of Address) on cards instead of the "Property ID" label; display the bare ID without the word "Property".
-- [x] Show current date for past availableFrom; rename labels to "Super Built-up area" and "Security Deposit".
-- [x] Verify with tests and a browser check (22 tests pass; card, cover image and labels confirmed in browser).
+- [x] Show all images in each property folder (any format, max 8), main-cover.jpg as cover, compass last.
+- [x] Display the property type (bhk) instead of the property ID above the address.
+- [x] Remove mobile/email OTP validation from Read more (unlocks directly for now).
+- [x] Verify with tests and a browser check (21 tests pass; browser confirms type badge, 7 photos with compass last, Read more unlocks without OTP, no console errors).
