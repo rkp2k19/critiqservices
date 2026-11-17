@@ -14,6 +14,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { VerifyDialog } from "@/components/site/VerifyDialog";
@@ -106,12 +107,13 @@ function PropertyPage() {
             </div>
             <div className="mt-3 grid grid-cols-4 gap-3">
               {property.images.map((src, i) => (
-                <button
+                <Button
+                  variant="ghost"
                   key={src}
                   type="button"
                   onClick={() => setActive(i)}
                   aria-label={`Show photo ${i + 1}`}
-                  className={`overflow-hidden rounded-xl ring-offset-2 ring-offset-background transition ${
+                  className={`h-auto p-0 overflow-hidden rounded-xl ring-offset-2 ring-offset-background transition ${
                     i === active ? "ring-2 ring-primary" : "opacity-70 hover:opacity-100"
                   }`}
                 >
@@ -123,92 +125,12 @@ function PropertyPage() {
                     loading="lazy"
                     className="aspect-[4/3] w-full object-cover"
                   />
-                </button>
+                </Button>
               ))}
             </div>
 
-            {unlocked && property.mapLink && (
-              <div className="mt-6 rounded-2xl bg-card p-6 shadow-card">
-                <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-                  Location map
-                </h2>
-                <div className="mt-3 overflow-hidden rounded-xl">
-                  <iframe
-                    title={`Map of ${property.address ?? property.locality}`}
-                    src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"]}&q=${encodeURIComponent(
-                      propertyAddress(property),
-                    )}`}
-                    className="aspect-video w-full border-0"
-                    loading="lazy"
-                    allowFullScreen
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
-                </div>
-                <a
-                  href={property.mapLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-deep"
-                >
-                  <MapPin className="size-4" /> Open in Google Maps
-                </a>
-              </div>
-            )}
-          </div>
-
-          {/* Details */}
-          <div className="space-y-5 self-start lg:sticky lg:top-6">
-            <div className="rounded-2xl bg-card p-6 shadow-card">
-              <span className="rounded-md bg-highlight px-2.5 py-1 font-display text-sm font-bold text-highlight-foreground">
-                {property.id}
-              </span>
-              {unlocked && (
-                <h1 className="mt-4 text-3xl font-extrabold">
-                  {property.title}
-                  <span className="mt-1 flex items-center gap-1.5 text-base font-medium text-muted-foreground">
-                    <MapPin className="size-4 text-primary" />{" "}
-                    {propertyAddress(property)}
-                  </span>
-                </h1>
-              )}
-              {!unlocked && <h1 className="sr-only">Property {property.id}</h1>}
-
-              <h2 className="mt-5 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-                Description
-              </h2>
-              <p className="mt-2 whitespace-pre-line leading-relaxed">
-                {unlocked ? property.description : previewDescription(property.description)}
-                {!unlocked && (
-                  <>
-                    {" "}
-                    <button
-                      type="button"
-                      onClick={() => setDialogOpen(true)}
-                      className="font-semibold text-primary underline underline-offset-4 hover:text-primary-deep"
-                    >
-                      Read more
-                    </button>
-                  </>
-                )}
-              </p>
-
-              {!unlocked && (
-                <div className="mt-5 flex items-start gap-3 rounded-xl bg-secondary p-4 text-sm text-secondary-foreground">
-                  <Lock className="mt-0.5 size-4 shrink-0" />
-                  Verify your mobile number and email to see rent, deposit, size, amenities and the
-                  full description.
-                </div>
-              )}
-
-              {unlocked && (
-                <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-success">
-                  <BadgeCheck className="size-4" /> Verified as {visitor.email}
-                </p>
-              )}
-            </div>
-
             {unlocked && (
-              <>
+              <div className="mt-6 space-y-5">
                 <div className="grid grid-cols-2 gap-3">
                   <Fact icon={<IndianRupee />} label="Monthly rent" value={formatRupees(property.rent)} />
                   <Fact icon={<Wallet />} label="Deposit" value={formatRupees(property.deposit)} />
@@ -234,6 +156,73 @@ function PropertyPage() {
                   </ul>
                 </div>
 
+                {property.mapLink && (
+                  <div className="border-t border-border pt-5">
+                    <Button asChild variant="outline" className="h-auto whitespace-normal py-3">
+                      <a href={property.mapLink} target="_blank" rel="noopener noreferrer">
+                        <MapPin className="size-4" /> Open in Google Maps
+                      </a>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Details */}
+          <div className="space-y-5 self-start lg:sticky lg:top-6">
+            <div className="rounded-2xl bg-card p-6 shadow-card">
+              <span className="rounded-md bg-highlight px-2.5 py-1 font-display text-sm font-bold text-highlight-foreground">
+                {property.id}
+              </span>
+              {unlocked && (
+                <h1 className="mt-4 text-3xl font-extrabold">
+                  {property.title || `Property ${property.id}`}
+                  <span className="mt-1 flex items-center gap-1.5 text-[14pt] font-bold text-foreground">
+                    <MapPin className="size-4 text-primary" />{" "}
+                    {propertyAddress(property)}
+                  </span>
+                </h1>
+              )}
+              {!unlocked && <h1 className="sr-only">Property {property.id}</h1>}
+
+              <h2 className="mt-5 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+                Description
+              </h2>
+              <p className="mt-2 whitespace-pre-line leading-relaxed">
+                {unlocked ? property.description : previewDescription(property.description)}
+                {!unlocked && (
+                  <>
+                    {" "}
+                    <Button
+                      variant="link"
+                      type="button"
+                      onClick={() => setDialogOpen(true)}
+                      className="h-auto p-0 font-semibold text-primary underline underline-offset-4 hover:text-primary-deep"
+                    >
+                      Read more
+                    </Button>
+                  </>
+                )}
+              </p>
+
+              {!unlocked && (
+                <div className="mt-5 flex items-start gap-3 rounded-xl bg-secondary p-4 text-sm text-secondary-foreground">
+                  <Lock className="mt-0.5 size-4 shrink-0" />
+                  Verify your mobile number and email to see rent, deposit, size, amenities and the
+                  full description.
+                </div>
+              )}
+
+              {unlocked && (
+                <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-success">
+                  <BadgeCheck className="size-4" /> Verified as {visitor.email}
+                </p>
+              )}
+            </div>
+
+            {unlocked && (
+              <>
                 <div className="flex items-start gap-3 rounded-2xl border border-dashed border-primary/40 bg-accent p-5 text-sm text-accent-foreground">
                   <Lock className="mt-0.5 size-4 shrink-0" />
                   <p>
@@ -265,7 +254,7 @@ function Fact({ icon, label, value }: { icon: React.ReactNode; label: string; va
       </span>
       <div className="min-w-0">
         <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="truncate font-semibold">{value}</p>
+        <p className="break-words font-semibold">{value}</p>
       </div>
     </div>
   );
